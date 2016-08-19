@@ -1,0 +1,11 @@
+ID,TEXT,TYPE
+1,CPU,Imported
+2,Motherboard,Imported
+3,Memory,Imported
+4,Video Card,Imported
+5,HDD,Imported
+6,Case,Imported
+7,Globe,Imported
+8,Tools,Imported
+9,Laptop,Homemade
+10,Desktop,Homemade
