@@ -14,8 +14,8 @@ var
 	whMap  = new Map(),
 	types = ["Standard", "Customized", "Upgrade"];
 
-var sales_num = alasql('SELECT MAX(number) + 1 as number FROM sales')[0].number;
-var number = "SO-0000" + String(sales_num);
+var rows = alasql('SELECT * FROM sales');
+var number = "SO-0000" + String(rows.length + 1);
 $('#number').val(number);
 
 $('#customer').change(function(event) {
@@ -128,7 +128,7 @@ function checkItemQty(event) {
 
 // update database
 $('#update').on('click', function() {
-	var customer = $('#customer').val(), number = sales_num, wh = parseInt($('#warehouse').val());
+	var customer = $('#customer').val(), number = $('#number').val(), wh = parseInt($('#warehouse').val());
 	var del_date = $('#del_date').val(), date = $('#date').val(), price = $('#price').val();
 	var cost = $('#cost').val(), items = [], qtys = [], detail = '';
 
@@ -146,10 +146,10 @@ $('#update').on('click', function() {
 		var item = parseInt(items.shift()), qty = parseInt(qtys.shift());
 		var stocks = alasql('SELECT * FROM stock WHERE stock.whouse = ? AND stock.item = ?', [ wh, item ]);
 		var stock = stocks[0];
+		//console.log(stock);
 		alasql('UPDATE stock SET stock.memo_sales = ? WHERE whouse = ? AND item = ?', [ stock.memo_sales + String(number) + '+', wh, item ]);
 		if (stock.balance >= qty) {
 			alasql('UPDATE stock SET balance = ?, hold_ship = ? WHERE whouse = ? AND item = ?', [ stock.balance - qty, stock.hold_ship + qty, wh, item ]);
-			alasql('UPDATE sales SET status = ? WHERE number = ? AND item = ? ', [ 'READY', number, item ]);
 		} else {
 			var balance = qty - stock.balance;
 			alasql('UPDATE stock SET balance = ?, hold_ship = ? WHERE whouse = ? AND item = ?', [ 0, stock.hold_ship + stock.balance, wh, item ]);
@@ -158,7 +158,6 @@ $('#update').on('click', function() {
 				balance -= change;
 				alasql('UPDATE stock SET hold_prod = ? WHERE whouse = ? AND item = ?', [ stock.hold_prod + change, wh, item ]);
 				if (balance === 0) {
-					alasql('UPDATE sales SET status = ? WHERE number = ? AND item = ? ', [ 'IN PRODUCTION', number, item ]);
 					continue;
 				}
 			}
@@ -172,7 +171,6 @@ $('#update').on('click', function() {
 			}
 			alasql('UPDATE stock SET stock.needed = ? WHERE whouse = ? AND item = ?', [ stock.needed + balance, wh, item ]);
 			var maker = alasql('SELECT * FROM item WHERE id = ?', [ item ])[0].maker.split('+');
-			var min = -1;
 			for (var j = 0; maker && j < maker.length; j++) {
 				var component = maker[j];
 				if (component.indexOf('*') === -1) {
@@ -180,51 +178,19 @@ $('#update').on('click', function() {
 				} else {
 					var qty_item = parseInt(component.split('*')[1]), code = component.split('*')[0];
 				}
-				var num = updateStock(parseInt(code), balance * qty_item, wh, item, number);
-				if (min === -1) {
-					min = num;
-				} else {
-					min = Math.min(min, num);
-				}
+				updateStock(parseInt(code), balance * qty_item, wh);
 			}
-			alasql('UPDATE pickp SET qty = ? WHERE sales_no = ? AND item = ? ', [ min, number, item ]);
-			/*var rows = alasql('SELECT * FROM pickp WHERE sales_no = ? AND item = ? ', [ number, item ]);
-			for (var i = 0; i < rows.length; i++) {
-				var row = rows[i];
-				console.log(row.component, row.qty, row.hold, row.balance);
-			}*/
 		}
 	}
-	checkStatus(number);
 	location.assign('sales.html');
 });
 
-function checkStatus(number) {
-	if (typeof alasql('SELECT * FROM pick WHERE sales_no = ? ', [ number ])[0] !== 'undefined') return;
-	var rows = alasql('SELECT * FROM sales WHERE number = ? ', [ number ]), bool = true;
-	for (var i = 0; i < rows.length; i++) {
-		var row = rows[i];
-		if (row.status !== "READY") {
-			bool = false; break;
-		}
-	}
-	if (bool) {
-		for (var i = 0; i < rows.length; i++) {
-			var id = alasql('SELECT MAX(id) + 1 as id FROM pick')[0].id, row = rows[i];
-			alasql('INSERT INTO pick VALUES(?,?,?,?,?,?)', [ id, "SHIPMENT", number, row.whouse, row.item, row.qty ]);
-		}
-	}
-}
-
-
-function updateStock(itemNum, qty, wh, item, number) {
+function updateStock(itemNum, qty, wh) {
 	var stocks = alasql('SELECT * FROM stock WHERE stock.whouse = ? AND stock.item = ?', [ parseInt(wh), parseInt(itemNum) ]);
-	var stock = stocks[0], pickp_id = alasql('SELECT MAX(id) + 1 as id FROM pickp')[0].id;
-	//alasql('UPDATE stock SET stock.memo_sales = ? WHERE whouse = ? AND item = ?', [ stock.memo_sales + String(number) + '+', wh, itemNum ]);
+	var stock = stocks[0];
+	alasql('UPDATE stock SET stock.memo_sales = ? WHERE whouse = ? AND item = ?', [ stock.memo_sales + String(number) + '+', wh, itemNum ]);
 	if (stock.balance >= qty) {
 		alasql('UPDATE stock SET balance = ?, hold_prod = ? WHERE whouse = ? AND item = ?', [ stock.balance - qty, stock.hold_prod + qty, wh, itemNum ]);
-		alasql('INSERT INTO pickp VALUES(?,?,?,?,?,?,?,?,?)', [ pickp_id, "PRODUCTION", number, wh, item, itemNum, 0, qty, 0]);
-		return qty;
 	} else {
 		var balance = qty - stock.balance;
 		alasql('UPDATE stock SET balance = ?, hold_prod = ? WHERE whouse = ? AND item = ?', [ 0, stock.hold_prod + stock.balance, wh, itemNum ]);
@@ -237,8 +203,6 @@ function updateStock(itemNum, qty, wh, item, number) {
 			}
 		}
 		alasql('UPDATE stock SET stock.needed = ? WHERE whouse = ? AND item = ?', [ stock.needed + balance, wh, itemNum ]);
-		alasql('INSERT INTO pickp VALUES(?,?,?,?,?,?,?,?,?)', [ pickp_id, "PRODUCTION", number, wh, item, itemNum, 0, stock.balance, qty - stock.balance]);
-		return stock.balance;
 	}
 } 
 

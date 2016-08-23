@@ -278,8 +278,8 @@ $('#update').on('click', function() {
 	var kind = $('#kind').val();
 	var name = $('#name').val();
 	var maker = '';
-	while (items.length > 0) {
-		var item = items.shift(), qty = qtys.shift();
+	for (var i = 0; i < items.length; i++) {
+		var item = items[i], qty = qtys[i];
 		if (item && item !== '' && qty > 0) {
 			maker += '+' + String(item) + (qty > 1 ? ('*' + String(qty)) : '');
 		}
@@ -317,16 +317,22 @@ $('#update').on('click', function() {
 	alasql('DELETE FROM stock WHERE item = ?', [ item_id ]);
 	if (whouses.length === 0 || (whouses.length === 1 && whouses[0] === '')){
 		var stock_id = alasql('SELECT MAX(id) + 1 as id FROM stock')[0].id;
-		alasql('INSERT INTO stock VALUES(?,?,?,?,?,?,?,?,?,?)', [ stock_id, item_id, '' , 0, 'Active', 0, 0, 0, 0, 0 ]);;
+		alasql('INSERT INTO stock VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)', [ stock_id, item_id, '' , 0, 'Active', 0, 0, 0, 0, 0, 0, 0, '+', "+" ]);;
 	}
 	
 	while (whouses.length > 0) {
 		var whouse = whouses.shift(), qty_wh = qtys_wh.shift();
 		if (whouse && whouse !== '') {
 			var stock_id = alasql('SELECT MAX(id) + 1 as id FROM stock')[0].id;
-			alasql('INSERT INTO stock VALUES(?,?,?,?,?,?,?,?,?,?)', [ stock_id, item_id, parseInt(whouse), qty_wh, "Active", 0, 0, 0, 0, 0 ]);
+			alasql('INSERT INTO stock VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)', [ stock_id, item_id, parseInt(whouse), qty_wh, "Active", 0, 0, 0, 0, 0, 0, 0, '+', "+" ]);
 			//var trans_id = alasql('SELECT MAX(id) + 1 as id FROM trans')[0].id;
 			//alasql('INSERT INTO trans VALUES(?,?,?,?,?,?,?)', [ trans_id, stock_id, date, qty_wh, qty_wh, "Initial Stock", localStorage.getItem('username') ]);
+			for (var i = 0; i < items.length; i++) {
+				if (typeof alasql('SELECT * FROM stock WHERE item = ? AND whouse = ?', [ parseInt(items[i]), parseInt(whouse) ]) === 'undefined') {
+					var stock_id = alasql('SELECT MAX(id) + 1 as id FROM stock')[0].id;
+					alasql('INSERT INTO stock VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)', [ stock_id, parseInt(items[i]), parseInt(whouse), 0, "Active", 0, 0, 0, 0, 0, 0, 0, '+', "+" ]);
+				}
+			}
 		}
 	}
 	

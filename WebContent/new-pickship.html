@@ -168,7 +168,7 @@
 		<div id="page-wrapper">
 			<div class="row">
 				<div class="col-lg-12">
-					<h3 class="page-header">New Item Group</h3>
+					<h3 class="page-header">New Inventory Pick Transaction</h3>
 				</div>
 				<!-- /.col-lg-12 -->
 			</div>
@@ -177,35 +177,53 @@
 			<form class="form-horizontal" style="font-family:tahoma;" role="form">
 				<div class="col-sm-10">
 				<div class="form-group">
-					<label style="color:#DC143C" class="control-label col-sm-2" for="kind">Item Group Kind</label>
+					<label style="color:#DC143C" class="control-label col-sm-2" for="customer">Customer Name</label>
 					<div class="col-sm-3">
-						<select class="form-control" id="kind">
+						<input type="text" class="form-control" id="customer">
+					</div>
+					<label class="control-label col-sm-offset-1 col-sm-2" for="number">Sales Order#</label>
+					<div class="col-sm-3">
+						<input type="text" class="form-control" id="number" disabled>
+					</div>
+				</div>
+				<div class="form-group">
+					<label style="color:#DC143C" class="control-label col-sm-2" for="warehouse">Warehouse</label>
+					<div class="col-sm-3">
+						<select class="form-control" id="warehouse">
 						<option value="" disabled selected>Select your option</option></select>
 					</div>
-					<label class="control-label col-sm-offset-1 col-sm-2" for="code">Item Group Code</label>
+					<label style="" class="control-label col-sm-2 col-sm-offset-1" for="salesman">Sales Person</label>
 					<div class="col-sm-3">
-						<input type="text" class="form-control" id="code" disabled>
+						<input type="text" class="form-control" id="salesman" disabled>
 					</div>
 				</div>
 				<div class="form-group">
-					<label style="color:#DC143C" class="control-label col-sm-2" for="name">Item Group Name</label>
-					<div class="col-sm-5">
-						<input type="text" class="form-control" id="name">
+					<label style="" class="control-label col-sm-2" for="del_date">Expected Delivery Date</label>
+					<div class="col-sm-3">
+						<input type="date" class="form-control" id="del_date">
+					</div>
+					<label style="" class="control-label col-sm-2 col-sm-offset-1" for="date">Sales Order Date</label>
+					<div class="col-sm-3">
+						<input type="date" class="form-control" id="date" disabled>
 					</div>
 				</div>
 				<div class="form-group">
-					<label style="color:#DC143C" class="control-label col-sm-2" id="item">Items?</label>
-					<label style="color:#DC143C" class="control-label col-sm-offset-1">Item Codes and Names</label>
-					<label style="" class="control-label col-sm-offset-4">Quantities</label>	
+					<label style="color:#DC143C" class="control-label col-sm-2" id="item">Items</label>
+					<label style="color:#DC143C" class="control-label col-sm-offset-2">Item Codes and Names</label>
+					<label style="color:#DC143C" class="control-label col-sm-offset-2">Quantities</label>	
 				</div>
 				<div id="insert">
-					<div class="form-group"> 
-						<div class="col-sm-offset-2 col-sm-5"> 
-							<select class="form-control" id="item1">
+					<div class="form-group">
+						<div class="col-sm-offset-1 col-sm-2"> 
+							<select class="form-control" id="type1" disabled>
+							<option value="" selected>Standard</option></select> 
+						</div>
+						<div class="col-sm-4"> 
+							<select class="form-control item" id="item1" disabled>
 							<option value="" disabled selected>Select your option</option></select> 
 						</div> 
-						<div class="col-sm-offset-1 col-sm-2"> 
-							<input type="number" class="form-control" name="qty" value="1" min="0"> 
+						<div class="col-sm-2"> 
+							<input type="number" class="form-control" name="qty" value="0" min="0" disabled style="text-align: right;"> 
 						</div> 
 						<div class=""> 
 							<a href="#" id="remove1"><i class="fa fa-trash-o fa-lg" style="color:#DC143C"></i></a> 
@@ -213,54 +231,22 @@
 					</div>
 				</div>
 				<div class="form-group">
-					<div class="col-sm-offset-3">
-						<a class="add"><i class="fa fa-plus fa-lg"></i> Add more items</a>
+					<div class="col-sm-offset-2">
+						<a class="add"><i class="fa fa-plus fa-lg"></i> Add more standard products</a>
 					</div>
 				</div>
 				<div class="form-group">
 					<label style="color:#DC143C" class="control-label col-sm-2" for="price">Selling Price</label>
-					<div class="col-sm-3">
+					<div class="col-sm-2">
 						<input type="number" class="form-control" id="price" value="">
 					</div>
-					<label style="" class="control-label col-sm-offset-1 col-sm-2" for="cost">Cost Price</label>
-					<div class="col-sm-3">
+					<label style="" class="control-label col-sm-1" for="price2">Total Price</label>
+					<div class="col-sm-2">
+						<input type="number" class="form-control" id="price2" value="0" disabled>
+					</div>
+					<label style="" class="control-label col-sm-1" for="cost">Total Cost</label>
+					<div class="col-sm-2">
 						<input type="number" class="form-control" id="cost" value="0" disabled>
-					</div>
-				</div>
-				<div class="form-group">
-					<label style="" class="control-label col-sm-2" for="unit">Unit</label>
-					<div class="col-sm-3">
-						<input type="text" class="form-control" id="unit" value="Pcs">
-					</div>
-					<label style="" class="control-label col-sm-offset-1 col-sm-2" for="date">Date</label>
-					<div class="col-sm-3">
-						<input type="date" class="form-control" id="date" disabled>
-					</div>
-				</div>
-				<div class="form-group">
-					<div class="checkbox">
-						<label class="control-label col-sm-2"><input type="checkbox" value="" id="check">Add initial inventory</label>
-					</div>
-					<label style="" class="control-label col-sm-offset-1 toggle" hidden="true">Warehouse</label>
-					<label style="" class="control-label col-sm-offset-3 toggle" hidden="true">In Stock</label>
-				</div>
-				<div id="insert2" class="toggle" hidden="true">
-					<div class="form-group"> 
-						<div class="col-sm-offset-2 col-sm-3"> 
-							<select class="form-control" id="wh1">
-							<option value="" disabled selected>Select your option</option></select> 
-						</div> 
-						<div class="col-sm-offset-1 col-sm-2"> 
-							<input type="number" class="form-control" name="qty" value="0" min="0"> 
-						</div> 
-						<div class=""> 
-							<a href="#" id="removewh1"><i class="fa fa-trash-o fa-lg" style="color:#DC143C"></i></a> 
-						</div> 
-					</div>
-				</div>
-				<div class="form-group" class="toggle" id="link" hidden="true">
-					<div class="col-sm-offset-3">
-						<a class="addwh"><i class="fa fa-plus fa-lg"></i> Add more warehouse</a>
 					</div>
 				</div>
 				<br>
@@ -269,7 +255,7 @@
 			<div class='col-sm-offset-2 col-sm-2'>
 				<button class="btn btn-info" id="update">Save</button>
 				&nbsp;
-				<a href="groups.html"><button class="btn btn-default" id="cancel">Cancel</button></a>
+				<a href="sales.html"><button class="btn btn-default" id="cancel">Cancel</button></a>
 			</div>
 		</div>
 		<!-- /#page-wrapper -->
@@ -307,7 +293,7 @@
     });
     </script>
     
-	<script src="js/new-group.js"></script>
+	<script src="js/new-pickship.js"></script>
 	
 </body>
 

@@ -45,7 +45,7 @@
 	<div id="wrapper">
 	
 		<!-- Navigation -->
-		<nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0;">
+		<nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
 				<!-- Brand and toggle get grouped for better mobile display -->
 				<div class="navbar-header">
 					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -112,7 +112,7 @@
 		                <li>
 		                	<a href="sales.html"><i class="fa fa-shopping-cart fa-fw"></i> Sales Orders</a>
 		                </li>
-		                <li>
+		               <li>
 		                	<a href="#"><i class="fa fa-credit-card fa-fw"></i> Purchase Orders<span class="fa arrow"></span></a>
 		                	<ul class="nav nav-second-level">
 		                		<li>
@@ -168,109 +168,65 @@
 		<div id="page-wrapper">
 			<div class="row">
 				<div class="col-lg-12">
-					<h3 class="page-header">New Item Group</h3>
+					<h3 class="page-header">Pending Transactions: Receive Inventory from Production
+						<button type="button" class="btn btn-info pull-right" onclick="newPAP()">
+						<i class="fa fa-plus fa-fw"></i>New</button>
+					</h3>
 				</div>
 				<!-- /.col-lg-12 -->
 			</div>
 			<!-- /.row -->
-			<!-- Abstract -->
-			<form class="form-horizontal" style="font-family:tahoma;" role="form">
-				<div class="col-sm-10">
-				<div class="form-group">
-					<label style="color:#DC143C" class="control-label col-sm-2" for="kind">Item Group Kind</label>
-					<div class="col-sm-3">
-						<select class="form-control" id="kind">
-						<option value="" disabled selected>Select your option</option></select>
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<form action="paprod.html" class="form-inline text-center">
+									<div class="form-group">
+										<label>Warehouse</label> <select name="q1" class="form-control">
+											<option value="0">All</option>
+										</select>
+									</div>
+									<div class="form-group">
+										<label>Classification</label> <select name="q2" class="form-control">
+											<option value="0">All</option>
+										</select>
+									</div>
+									<div class="form-group">
+										<label>Item Code</label> <input name="q3" type="text"
+											class="form-control" placeholder="Prefix Search">
+									</div>
+									<button type="submit" class="btn btn-primary" onclick="search()">
+										<span class="glyphicon glyphicon-search"></span> Search
+									</button>
+							</form>
+						</div>
+						<!--  /.panel-heading -->
+						<div class="panel-body">
+							<div class="dataTable_wrapper">
+								<table class="table table-striped table-bordered table-hover" id="dataTables-stocks">
+									<thead>
+										<tr>
+											<th></th>										
+											<th>Warehouse</th>
+											<th>Classification</th>
+											<th>Item Code</th>
+											<th>Detail</th>
+											<th>In Production</th>
+										</tr>
+									</thead>
+									<tbody id="tbody-stocks">
+									</tbody>
+								</table>
+							</div>
+							<!-- ./table-responsive -->
+						</div>
+						<!-- /.panel-body -->
 					</div>
-					<label class="control-label col-sm-offset-1 col-sm-2" for="code">Item Group Code</label>
-					<div class="col-sm-3">
-						<input type="text" class="form-control" id="code" disabled>
-					</div>
+					<!-- /.panel -->
 				</div>
-				<div class="form-group">
-					<label style="color:#DC143C" class="control-label col-sm-2" for="name">Item Group Name</label>
-					<div class="col-sm-5">
-						<input type="text" class="form-control" id="name">
-					</div>
-				</div>
-				<div class="form-group">
-					<label style="color:#DC143C" class="control-label col-sm-2" id="item">Items?</label>
-					<label style="color:#DC143C" class="control-label col-sm-offset-1">Item Codes and Names</label>
-					<label style="" class="control-label col-sm-offset-4">Quantities</label>	
-				</div>
-				<div id="insert">
-					<div class="form-group"> 
-						<div class="col-sm-offset-2 col-sm-5"> 
-							<select class="form-control" id="item1">
-							<option value="" disabled selected>Select your option</option></select> 
-						</div> 
-						<div class="col-sm-offset-1 col-sm-2"> 
-							<input type="number" class="form-control" name="qty" value="1" min="0"> 
-						</div> 
-						<div class=""> 
-							<a href="#" id="remove1"><i class="fa fa-trash-o fa-lg" style="color:#DC143C"></i></a> 
-						</div> 
-					</div>
-				</div>
-				<div class="form-group">
-					<div class="col-sm-offset-3">
-						<a class="add"><i class="fa fa-plus fa-lg"></i> Add more items</a>
-					</div>
-				</div>
-				<div class="form-group">
-					<label style="color:#DC143C" class="control-label col-sm-2" for="price">Selling Price</label>
-					<div class="col-sm-3">
-						<input type="number" class="form-control" id="price" value="">
-					</div>
-					<label style="" class="control-label col-sm-offset-1 col-sm-2" for="cost">Cost Price</label>
-					<div class="col-sm-3">
-						<input type="number" class="form-control" id="cost" value="0" disabled>
-					</div>
-				</div>
-				<div class="form-group">
-					<label style="" class="control-label col-sm-2" for="unit">Unit</label>
-					<div class="col-sm-3">
-						<input type="text" class="form-control" id="unit" value="Pcs">
-					</div>
-					<label style="" class="control-label col-sm-offset-1 col-sm-2" for="date">Date</label>
-					<div class="col-sm-3">
-						<input type="date" class="form-control" id="date" disabled>
-					</div>
-				</div>
-				<div class="form-group">
-					<div class="checkbox">
-						<label class="control-label col-sm-2"><input type="checkbox" value="" id="check">Add initial inventory</label>
-					</div>
-					<label style="" class="control-label col-sm-offset-1 toggle" hidden="true">Warehouse</label>
-					<label style="" class="control-label col-sm-offset-3 toggle" hidden="true">In Stock</label>
-				</div>
-				<div id="insert2" class="toggle" hidden="true">
-					<div class="form-group"> 
-						<div class="col-sm-offset-2 col-sm-3"> 
-							<select class="form-control" id="wh1">
-							<option value="" disabled selected>Select your option</option></select> 
-						</div> 
-						<div class="col-sm-offset-1 col-sm-2"> 
-							<input type="number" class="form-control" name="qty" value="0" min="0"> 
-						</div> 
-						<div class=""> 
-							<a href="#" id="removewh1"><i class="fa fa-trash-o fa-lg" style="color:#DC143C"></i></a> 
-						</div> 
-					</div>
-				</div>
-				<div class="form-group" class="toggle" id="link" hidden="true">
-					<div class="col-sm-offset-3">
-						<a class="addwh"><i class="fa fa-plus fa-lg"></i> Add more warehouse</a>
-					</div>
-				</div>
-				<br>
-				</div>
-			</form>
-			<div class='col-sm-offset-2 col-sm-2'>
-				<button class="btn btn-info" id="update">Save</button>
-				&nbsp;
-				<a href="groups.html"><button class="btn btn-default" id="cancel">Cancel</button></a>
+				<!-- /.col-lg-12 -->
 			</div>
+			<!-- /.row -->		
 		</div>
 		<!-- /#page-wrapper -->
 		
@@ -302,12 +258,13 @@
     <script>
     $(document).ready(function() { 
         $('#dataTables-stocks').DataTable({
-                responsive: true
+                responsive: true,
+                //"order": [[ 1, 'asc' ]]
         });
     });
     </script>
     
-	<script src="js/new-group.js"></script>
+	<script src="js/paprod.js"></script>
 	
 </body>
 

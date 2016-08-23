@@ -42,12 +42,12 @@ DB.load = function() {
 	
 	// Inventories
 	alasql('DROP TABLE IF EXISTS stock;');
-	alasql('CREATE TABLE stock(id INT IDENTITY, item INT, whouse INT, balance INT, state STRING, hold_ship INT, incoming INT, prod INT, hold_prod INT, needed INT);');
+	alasql('CREATE TABLE stock(id INT IDENTITY, item INT, whouse INT, balance INT, state STRING, hold_ship INT, incoming INT, hold_in INT, prod INT, hold_prod INT, hold_forprod INT, needed INT, memo_sales STRING, memo_pur STRING);');
 	var pstock = alasql.promise('SELECT MATRIX * FROM CSV("data/STOCK-STOCK.csv", {headers: true})').then(
 			function(stocks) {
 				for (var i = 0; i < stocks.length; i++) {
 					var stock = stocks[i];
-					alasql('INSERT INTO stock VALUES(?,?,?,?,?,?,?,?,?,?);', stock);
+					alasql('INSERT INTO stock VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?);', stock);
 				}
 			});
 
@@ -84,17 +84,47 @@ DB.load = function() {
 			});
 	
 	alasql('DROP TABLE IF EXISTS sales;');
-	alasql('CREATE TABLE sales(id INT IDENTITY, date DATE, number STRING, type STRING, customer STRING, status STRING, whouse INT, amount INT, detail STRING, user STRING);');
+	alasql('CREATE TABLE sales(id INT IDENTITY, date DATE, number INT, type STRING, customer STRING, status STRING, whouse INT, amount INT, item INT, qty INT, user STRING);');
 	var psales = alasql.promise('SELECT MATRIX * FROM CSV("data/SALES-SALES.csv", {headers: true})').then(
 			function(saless) {
 				for (var i = 0; i < saless.length; i++) {
 					var sales = saless[i];
-					alasql('INSERT INTO sales VALUES(?,?,?,?,?,?,?,?,?,?);', sales);
+					alasql('INSERT INTO sales VALUES(?,?,?,?,?,?,?,?,?,?,?);', sales);
+				}
+			});
+	
+	alasql('DROP TABLE IF EXISTS pur;');
+	alasql('CREATE TABLE pur(id INT IDENTITY, date DATE, number INT, maker STRING, status STRING, whouse INT, amount INT, item INT, qty INT, price INT, user STRING, receive DATE);');
+	var ppur = alasql.promise('SELECT MATRIX * FROM CSV("data/PUR-PUR.csv", {headers: true})').then(
+			function(purs) {
+				for (var i = 0; i < purs.length; i++) {
+					var pur = purs[i];
+					alasql('INSERT INTO pur VALUES(?,?,?,?,?,?,?,?,?,?,?,?);', pur);
+				}
+			});
+	
+	alasql('DROP TABLE IF EXISTS pick;');
+	alasql('CREATE TABLE pick(id INT IDENTITY, type STRING, sales_no INT, whouse INT, item INT, qty INT);');
+	var ppick = alasql.promise('SELECT MATRIX * FROM CSV("data/PICK-PEND.csv", {headers: true})').then(
+			function(picks) {
+				for (var i = 0; i < picks.length; i++) {
+					var pick = picks[i];
+					alasql('INSERT INTO pick VALUES(?,?,?,?,?,?);', pick);
+				}
+			});
+	
+	alasql('DROP TABLE IF EXISTS pickp;');
+	alasql('CREATE TABLE pickp(id INT IDENTITY, type STRING, sales_no INT, whouse INT, item INT, component INT, qty INT, hold INT, balance INT);');
+	var ppickp = alasql.promise('SELECT MATRIX * FROM CSV("data/PICK-PROD.csv", {headers: true})').then(
+			function(pickps) {
+				for (var i = 0; i < pickps.length; i++) {
+					var pickp = pickps[i];
+					alasql('INSERT INTO pickp VALUES(?,?,?,?,?,?,?,?,?);', pickp);
 				}
 			});
 	
 	// Reload page
-	Promise.all([ pkind, pitem, pwhouse, pstock, ptrans, puser, pit_his, psales ]).then(function() {
+	Promise.all([ pkind, pitem, pwhouse, pstock, ptrans, puser, pit_his, psales, ppur, ppick, ppickp ]).then(function() {
 		window.location.reload(true);
 	});
 };

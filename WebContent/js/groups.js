@@ -44,7 +44,7 @@ function search() {
 
 // build sql
 var sql = 'SELECT stock.id, whouse.name, kind.text, item.code, item.detail, item.price, item.cost, stock.balance, item.unit, \
-	stock.hold_ship, stock.incoming, stock.needed, stock.prod FROM stock \
+	stock.hold_ship, stock.incoming, stock.needed, stock.prod, stock.hold_in, stock.hold_prod FROM stock \
 	LEFT JOIN whouse ON whouse.id = stock.whouse \
 	LEFT JOIN item ON item.id = stock.item \
 	LEFT JOIN kind ON kind.id = item.kind \
@@ -70,8 +70,8 @@ for (var i = 0; i < stocks.length; i++) {
 	tr.append('<td style="text-align: right;">' + ((stock.cost && stock.cost !== '') ? numberWithCommas(stock.cost) : '') + '</td>');
 	tr.append('<td style="text-align: right;">' + stock.balance + '</td>');
 	tr.append('<td style="text-align: right;">' + stock.hold_ship + '</td>');
-	tr.append('<td style="text-align: right;">' + stock.prod + '</td>');
-	tr.append('<td style="text-align: right;">' + stock.incoming + '</td>');
+	tr.append('<td style="text-align: right;">' + stock.prod + ' (On hold: ' + stock.hold_prod + ')</td>');
+	tr.append('<td style="text-align: right;">' + stock.incoming + ' (On hold: ' + stock.hold_in + ')</td>');
 	tr.append('<td style="text-align: right;">' + stock.needed + '</td>');
 	tr.append('<td>' + stock.unit + '</td>');
 	tr.appendTo(tbody);
